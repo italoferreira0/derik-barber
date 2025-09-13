@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container my-5">
+  <h2 class="text-center mb-5">Nossos Serviços</h2>
+  <div class="row g-4">
+    
+    {% for servico in servicos %}
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm">
+        {% if servico.imagem %}
+        <img src="{{ servico.imagem.url }}" class="card-img-top" alt="{{ servico.nome }}" style="height: 200px; object-fit: cover;">
+        {% endif %}
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title">{{ servico.nome }}</h5>
+          <p class="card-text flex-grow-1">{{ servico.descricao|truncatewords:20 }}</p>
+          <p class="fw-bold mt-3">R$ {{ servico.preco }}</p>
+          <a href="{% url 'agenda' %}" class="btn btn-dark mt-auto">Agendar</a>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <p>Nenhum serviço cadastrado.</p>
+    {% endfor %}
+
+  </div>
+</div>
+{% endblock %}

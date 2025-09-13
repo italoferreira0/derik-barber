@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+  <h2 class="text-center mb-4">Entre em Contato</h2>
+  <div class="row justify-content-center">
+    
+    <!-- Formulário -->
+    <div class="col-md-6">
+      <div class="card shadow-lg">
+        <div class="card-body">
+          <form method="post">
+            {% csrf_token %}
+            
+            <!-- Nome -->
+            <div class="mb-3">
+              <label for="nome" class="form-label">Nome</label>
+              <input type="text" class="form-control" id="nome" name="nome" required>
+            </div>
+
+            <!-- Email -->
+            <div class="mb-3">
+              <label for="email" class="form-label">E-mail</label>
+              <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+
+            <!-- Telefone -->
+            <div class="mb-3">
+              <label for="telefone" class="form-label">Telefone</label>
+              <input type="tel" class="form-control" id="telefone" name="telefone" placeholder="(DDD) 99999-9999">
+            </div>
+
+            <!-- Mensagem -->
+            <div class="mb-3">
+              <label for="mensagem" class="form-label">Mensagem</label>
+              <textarea class="form-control" id="mensagem" name="mensagem" rows="4" required></textarea>
+            </div>
+
+            <!-- Botão -->
+            <button type="submit" class="btn btn-dark w-100">Enviar Mensagem</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Informações da Barbearia -->
+    <div class="col-md-4 mt-4 mt-md-0">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h5 class="card-title">📍 Nossa Barbearia</h5>
+          <p class="mb-1"><strong>Endereço:</strong> Rua Exemplo, 123 - Centro</p>
+          <p class="mb-1"><strong>Telefone:</strong> (83) 99999-0000</p>
+          <p class="mb-3"><strong>Email:</strong> contato@barbearia.com</p>
+          
+          <h6>Siga nas redes sociais:</h6>
+          <a href="#" class="btn btn-sm btn-outline-light bg-dark me-2">Instagram</a>
+          <a href="#" class="btn btn-sm btn-outline-light bg-dark">Facebook</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+  <h2 class="text-center mb-4">Agendamento</h2>
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow-lg">
+        <div class="card-body">
+          <form method="post">
+            {% csrf_token %}
+            
+            <!-- Serviço -->
+            <div class="mb-3">
+              <label for="servico" class="form-label">Selecione o Serviço</label>
+              <select class="form-select" id="servico" name="servico" required>
+                <option value="" disabled selected>-- Escolha um serviço --</option>
+                <option value="corte">Corte de Cabelo</option>
+                <option value="barba">Barba Completa</option>
+                <option value="combo">Combo Corte + Barba</option>
+              </select>
+            </div>
+
+            <!-- Data -->
+            <div class="mb-3">
+              <label for="data" class="form-label">Data</label>
+              <input type="date" class="form-control" id="data" name="data" required>
+            </div>
+
+            <!-- Horário -->
+            <div class="mb-3">
+              <label for="horario" class="form-label">Horário</label>
+              <input type="time" class="form-control" id="horario" name="horario" required>
+            </div>
+
+            <!-- Observações -->
+            <div class="mb-3">
+              <label for="observacoes" class="form-label">Observações</label>
+              <textarea class="form-control" id="observacoes" name="observacoes" rows="3"></textarea>
+            </div>
+
+            <!-- Botão -->
+            <button type="submit" class="btn btn-dark w-100">Confirmar Agendamento</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
