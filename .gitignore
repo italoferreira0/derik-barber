@@ -1,0 +1,36 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Diretórios criados por IDEs
+.vscode/
+.idea/
+
+# Arquivos de ambiente virtual
+venv/
+env/
+ENV/
+.venv/
+
+# Arquivos de configuração local
+*.env
+.env.*
+
+# Arquivos de banco de dados local
+*.sqlite3
+
+# Arquivos de log
+*.log
+
+# Arquivos temporários do sistema operacional
+.DS_Store
+Thumbs.db
+
+# Static & media (se gerados em runtime)
+staticfiles/
+media/
+
+# Arquivos de migração não usados (opcional)
+*/migrations/__pycache__/
+*/migrations/*.pyc
