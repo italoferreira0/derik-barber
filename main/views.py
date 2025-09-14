@@ -232,3 +232,6 @@ def horarios_disponiveis(request):
 
 class ContatoView(TemplateView):
     template_name = 'contato.html'
+
+class MyAgendamentos(SessionLoginRequiredMixin, TemplateView):
+    template_name = 'my-agendamento.html'

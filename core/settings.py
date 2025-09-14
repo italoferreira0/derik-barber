@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     #My Apps
-    'front_end',
+    'main',
     'clientes',
     'servicos',
     'agendamento'

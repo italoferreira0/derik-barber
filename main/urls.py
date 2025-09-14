@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from front_end.views import *
+from main.views import *
 
 
 urlpatterns = [
@@ -12,5 +12,5 @@ urlpatterns = [
     path("agenda/", AgendaView.as_view(), name="agenda"),
     path("horarios-disponiveis/", horarios_disponiveis, name="horarios_disponiveis"),
     path("contato/", ContatoView.as_view(), name="contato"),
-
+    path("my-agendamento/", MyAgendamentos.as_view(), name="my-agendamento"),
 ]
