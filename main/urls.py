@@ -1,7 +1,8 @@
-from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
 from main.views import *
-
+from clientes.views import LoginView, LogoutView, CadastroView
+from agendamento.views import MyAgendamentos, AgendaView, horarios_disponiveis
+from servicos.views import ServicosView
 
 urlpatterns = [
     path('', IndexView.as_view(), name='index'),
