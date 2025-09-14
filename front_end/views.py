@@ -6,12 +6,18 @@ from django.contrib.auth.hashers import check_password
 from django.views.decorators.csrf import csrf_protect
 from django.utils.decorators import method_decorator
 from servicos.models import Servico
+from servicos.models import Planos
 
 
 from clientes.models import Cliente
 
 class IndexView(TemplateView):
     template_name = 'index.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['planos'] = Planos.objects.all()
+        return context
 
 class LoginView(View):
     def get(self, request):
@@ -71,6 +77,17 @@ class ServicosListView(ListView):
     model = Servico
     template_name = "servicos.html"
     context_object_name = "servicos"
+
+def PlanosView(request):
+    planos = Planos.objects.all()  # pega todos os serviços
+    return render(request, "index.html", {"planos": planos})
+
+class PlanosListView(ListView):
+    model = Planos
+    template_name = "index.html"
+    context_object_name = "planos"
+
+
 
 class AgendaView(TemplateView):
     template_name = 'agenda.html'
