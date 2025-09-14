@@ -10,6 +10,7 @@ urlpatterns = [
     path("cadastro/", CadastroView.as_view(), name="cadastro"),
     path("servicos/", ServicosView, name="servicos"),
     path("agenda/", AgendaView.as_view(), name="agenda"),
+    path("horarios-disponiveis/", horarios_disponiveis, name="horarios_disponiveis"),
     path("contato/", ContatoView.as_view(), name="contato"),
 
 ]

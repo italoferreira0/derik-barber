@@ -2,6 +2,17 @@
 {% block content %}
 <div class="container">
   <h2 class="text-center mb-4">Agendamento</h2>
+  
+  <!-- Mensagens -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+  
   <div class="row justify-content-center">
     <div class="col-md-6">
       <div class="card shadow-lg">
@@ -12,12 +23,17 @@
             <!-- Serviço -->
             <div class="mb-3">
               <label for="servico" class="form-label">Selecione o Serviço</label>
-              <select class="form-select" id="servico" name="servico" required>
-                <option value="" disabled selected>-- Escolha um serviço --</option>
-                <option value="corte">Corte de Cabelo</option>
-                <option value="barba">Barba Completa</option>
-                <option value="combo">Combo Corte + Barba</option>
+              <select name="servico" class="form-select" id="servico">
+                <option value="">Selecione um serviço</option>
+                {% for servico in servicos %}
+                    <option value="{{ servico.id }}" data-duracao="{{ servico.duracao }}">{{ servico.nome }} - {{servico.preco}} R$ ({{servico.duracao}})</option>
+                {% endfor %}
               </select>
+              <div class="form-text">
+                <span id="duracao-info" style="display: none;">
+                  <strong>Duração:</strong> <span id="duracao-texto"></span>
+                </span>
+              </div>
             </div>
 
             <!-- Data -->
@@ -46,4 +62,104 @@
     </div>
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const servicoSelect = document.getElementById('servico');
+    const duracaoInfo = document.getElementById('duracao-info');
+    const duracaoTexto = document.getElementById('duracao-texto');
+    const dataInput = document.getElementById('data');
+    const horarioInput = document.getElementById('horario');
+    const form = document.querySelector('form');
+    
+    // Define data mínima como hoje
+    const hoje = new Date().toISOString().split('T')[0];
+    dataInput.setAttribute('min', hoje);
+    
+    // Função para buscar horários ocupados
+    function buscarHorariosOcupados() {
+        if (!servicoSelect.value || !dataInput.value) return;
+        
+        fetch(`/horarios-disponiveis/?data=${dataInput.value}&servico_id=${servicoSelect.value}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.horarios_ocupados && data.horarios_ocupados.length > 0) {
+                    mostrarHorariosOcupados(data.horarios_ocupados);
+                } else {
+                    ocultarHorariosOcupados();
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao buscar horários:', error);
+            });
+    }
+    
+    // Função para mostrar horários ocupados
+    function mostrarHorariosOcupados(horarios) {
+        let horariosDiv = document.getElementById('horarios-ocupados');
+        if (!horariosDiv) {
+            horariosDiv = document.createElement('div');
+            horariosDiv.id = 'horarios-ocupados';
+            horariosDiv.className = 'alert alert-warning mt-2';
+            dataInput.parentNode.appendChild(horariosDiv);
+        }
+        
+        let html = '<strong>Horários ocupados neste dia:</strong><br>';
+        horarios.forEach(horario => {
+            html += `• ${horario.inicio} - ${horario.fim} (${horario.servico})<br>`;
+        });
+        horariosDiv.innerHTML = html;
+    }
+    
+    // Função para ocultar horários ocupados
+    function ocultarHorariosOcupados() {
+        const horariosDiv = document.getElementById('horarios-ocupados');
+        if (horariosDiv) {
+            horariosDiv.remove();
+        }
+    }
+    
+    // Event listeners
+    servicoSelect.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        const duracao = selectedOption.getAttribute('data-duracao');
+        
+        if (duracao && this.value) {
+            duracaoTexto.textContent = duracao;
+            duracaoInfo.style.display = 'block';
+            buscarHorariosOcupados();
+        } else {
+            duracaoInfo.style.display = 'none';
+            ocultarHorariosOcupados();
+        }
+    });
+    
+    dataInput.addEventListener('change', function() {
+        if (servicoSelect.value) {
+            buscarHorariosOcupados();
+        }
+    });
+    
+    // Validação básica no frontend
+    form.addEventListener('submit', function(e) {
+        if (!servicoSelect.value) {
+            e.preventDefault();
+            alert('Por favor, selecione um serviço.');
+            return false;
+        }
+        
+        if (!dataInput.value) {
+            e.preventDefault();
+            alert('Por favor, selecione uma data.');
+            return false;
+        }
+        
+        if (!horarioInput.value) {
+            e.preventDefault();
+            alert('Por favor, selecione um horário.');
+            return false;
+        }
+    });
+});
+</script>
 {% endblock %}

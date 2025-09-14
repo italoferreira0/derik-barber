@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     #My Apps
     'front_end',
     'clientes',
-    'servicos'
+    'servicos',
+    'agendamento'
 ]
 
 MIDDLEWARE = [
