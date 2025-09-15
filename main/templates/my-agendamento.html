@@ -1,9 +1,23 @@
 {% extends 'base.html' %}
-{% block content %}
-<div class="container">
-  <h2 class="text-center mb-4">Meus Agendamentos</h2>
-  <div class="row justify-content-center">
 
-  </div>
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Meus Agendamentos</h2>
+
+    {% if agendamentos %}
+        <ul class="list-group">
+            {% for ag in agendamentos %}
+                <li class="list-group-item">
+                    <strong>Serviço:</strong> {{ ag.servico.nome }} <br>
+                    <strong>Data:</strong> {{ ag.data|date:"d/m/Y" }} às {{ ag.hora|time:"H:i" }} <br>
+                    {% if ag.observacoes %}
+                        <strong>Observações:</strong> {{ ag.observacoes }}
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Você não possui agendamentos.</p>
+    {% endif %}
 </div>
 {% endblock %}

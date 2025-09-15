@@ -1,11 +1,12 @@
 from django.shortcuts import render
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, View
 from main.views import SessionLoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 from django.views.decorators.csrf import csrf_protect
 from django.utils.decorators import method_decorator
 from servicos.models import Servico
+from clientes.models import Cliente
 from agendamento.models import Agendamento
 from django.contrib import messages
 from datetime import datetime, date
@@ -14,6 +15,22 @@ from django.http import JsonResponse
 # Create your views here.
 class MyAgendamentos(SessionLoginRequiredMixin, TemplateView):
     template_name = 'my-agendamento.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        cliente_id = self.request.session.get("cliente_id")
+        
+        if cliente_id:
+            try:
+                cliente = Cliente.objects.get(id=cliente_id)
+                agendamentos = Agendamento.objects.filter(cliente=cliente).order_by('data', 'hora')
+                context['agendamentos'] = agendamentos
+            except Cliente.DoesNotExist:
+                context['agendamentos'] = []
+        else:
+            context['agendamentos'] = []
+            
+        return context
 
 @method_decorator(csrf_protect, name='dispatch')
 class AgendaView(SessionLoginRequiredMixin, TemplateView):
@@ -91,7 +108,7 @@ class AgendaView(SessionLoginRequiredMixin, TemplateView):
             )
             
             messages.success(request, 'Agendamento realizado com sucesso!')
-            return redirect('agenda')
+            return redirect('my-agendamento')
             
         except ValueError:
             messages.error(request, 'Data ou horário inválidos.')
@@ -137,3 +154,14 @@ def horarios_disponiveis(request):
             return JsonResponse({'error': str(e)}, status=400)
     
     return JsonResponse({'error': 'Método não permitido'}, status=405)
+
+class MeusAgendamentosView(View):
+    def get(self, request):
+        cliente_id = request.session.get("cliente_id")  # pega o id do cliente logado da sessão
+        if not cliente_id:
+            return redirect("login")  # se não tiver logado, redireciona
+
+        cliente = Cliente.objects.get(id=cliente_id)
+        agendamentos = Agendamento.objects.filter(cliente=cliente)
+
+        return render(request, "my-agendamento.html", {"agendamentos": agendamentos})

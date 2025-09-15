@@ -19,6 +19,7 @@ ENV/
 
 # Arquivos de banco de dados local
 *.sqlite3
+db.sqlite3
 
 # Arquivos de log
 *.log
