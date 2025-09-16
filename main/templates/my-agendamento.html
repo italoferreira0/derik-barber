@@ -2,17 +2,25 @@
 
 {% block content %}
 <div class="container mt-4">
+    {% csrf_token %}
     <h2 class="mb-4">Meus Agendamentos</h2>
 
     {% if agendamentos %}
         <ul class="list-group">
             {% for ag in agendamentos %}
-                <li class="list-group-item">
-                    <strong>Serviço:</strong> {{ ag.servico.nome }} <br>
-                    <strong>Data:</strong> {{ ag.data|date:"d/m/Y" }} às {{ ag.hora|time:"H:i" }} <br>
-                    {% if ag.observacoes %}
-                        <strong>Observações:</strong> {{ ag.observacoes }}
-                    {% endif %}
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div>
+                        <strong>Serviço:</strong> {{ ag.servico.nome }} <br>
+                        <strong>Data:</strong> {{ ag.data|date:"d/m/Y" }} às {{ ag.hora|time:"H:i" }} <br>
+                        {% if ag.observacoes %}
+                            <strong>Observações:</strong> {{ ag.observacoes }}
+                        {% endif %}
+                    </div>
+                    <div>
+                        <button class="btn btn-danger btn-sm deletar-agendamento" data-agendamento-id="{{ ag.id }}">
+                            <i class="fas fa-trash"></i> Deletar
+                        </button>
+                    </div>
                 </li>
             {% endfor %}
         </ul>
@@ -20,4 +28,77 @@
         <p>Você não possui agendamentos.</p>
     {% endif %}
 </div>
+
+<!-- Modal de Confirmação -->
+<div class="modal fade" id="confirmarDelecaoModal" tabindex="-1" aria-labelledby="confirmarDelecaoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmarDelecaoModalLabel">Confirmar Deleção</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Tem certeza que deseja deletar este agendamento? Esta ação não pode ser desfeita.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="confirmarDelecaoBtn">Deletar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Event delegation para os botões de deletar
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.deletar-agendamento')) {
+            e.preventDefault();
+            const button = e.target.closest('.deletar-agendamento');
+            const agendamentoId = button.getAttribute('data-agendamento-id');
+            confirmarDelecao(agendamentoId);
+        }
+    });
+    
+    // Event listener para o botão de confirmação do modal
+    document.getElementById('confirmarDelecaoBtn').addEventListener('click', function() {
+        const agendamentoId = this.getAttribute('data-agendamento-id');
+        
+        // Fazer requisição para deletar o agendamento
+        fetch(`/deletar-agendamento/${agendamentoId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => {
+            if (response.ok) {
+                // Recarregar a página para mostrar a atualização
+                window.location.reload();
+            } else {
+                alert('Erro ao deletar agendamento. Tente novamente.');
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert('Erro ao deletar agendamento. Tente novamente.');
+        });
+        
+        // Fechar o modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('confirmarDelecaoModal'));
+        modal.hide();
+    });
+});
+
+function confirmarDelecao(agendamentoId) {
+    const modal = new bootstrap.Modal(document.getElementById('confirmarDelecaoModal'));
+    const confirmarBtn = document.getElementById('confirmarDelecaoBtn');
+    
+    // Armazenar o ID do agendamento no botão de confirmação
+    confirmarBtn.setAttribute('data-agendamento-id', agendamentoId);
+    
+    modal.show();
+}
+</script>
 {% endblock %}

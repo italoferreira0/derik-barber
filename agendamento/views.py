@@ -11,6 +11,7 @@ from agendamento.models import Agendamento
 from django.contrib import messages
 from datetime import datetime, date
 from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
 
 # Create your views here.
 class MyAgendamentos(SessionLoginRequiredMixin, TemplateView):
@@ -165,3 +166,23 @@ class MeusAgendamentosView(View):
         agendamentos = Agendamento.objects.filter(cliente=cliente)
 
         return render(request, "my-agendamento.html", {"agendamentos": agendamentos})
+
+@require_http_methods(["POST"])
+def deletar_agendamento(request, agendamento_id):
+    """View para deletar um agendamento específico"""
+    cliente_id = request.session.get("cliente_id")
+    
+    if not cliente_id:
+        return JsonResponse({'error': 'Usuário não autenticado'}, status=401)
+    
+    try:
+        # Busca o agendamento e verifica se pertence ao cliente logado
+        agendamento = Agendamento.objects.get(id=agendamento_id, cliente_id=cliente_id)
+        agendamento.delete()
+        
+        return JsonResponse({'success': 'Agendamento deletado com sucesso'}, status=200)
+        
+    except Agendamento.DoesNotExist:
+        return JsonResponse({'error': 'Agendamento não encontrado'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': f'Erro ao deletar agendamento: {str(e)}'}, status=500)
