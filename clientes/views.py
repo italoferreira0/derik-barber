@@ -48,16 +48,50 @@ class CadastroView(CreateView):
         email = request.POST.get("email")
         telefone = request.POST.get("telefone")
         senha = request.POST.get("senha")
+        confirmar_senha = request.POST.get("confirmar_senha")
 
-        # Criptografa a senha
-        senha_criptografada = make_password(senha)
+        # Validações
+        erros = []
+        
+        if not nome or len(nome.strip()) < 2:
+            erros.append("Nome deve ter pelo menos 2 caracteres")
+        
+        if not email or '@' not in email:
+            erros.append("Email inválido")
+        
+        if not telefone or len(telefone.replace(' ', '').replace('(', '').replace(')', '').replace('-', '')) < 10:
+            erros.append("Telefone inválido")
+        
+        if not senha or len(senha) < 6:
+            erros.append("Senha deve ter pelo menos 6 caracteres")
+        
+        if senha != confirmar_senha:
+            erros.append("Senhas não coincidem")
+        
+        # Verifica se email já existe
+        if Cliente.objects.filter(email=email).exists():
+            erros.append("Email já cadastrado")
+        
+        if erros:
+            return render(request, "cadastro.html", {"erros": erros})
 
-        # Cria o cliente
-        Cliente.objects.create(
-            nome=nome,
-            email=email,
-            telefone=telefone,
-            senha=senha_criptografada
-        )
+        try:
+            # Criptografa a senha
+            senha_criptografada = make_password(senha)
 
-        return redirect("login")
+            # Cria o cliente
+            Cliente.objects.create(
+                nome=nome.strip(),
+                email=email.strip().lower(),
+                telefone=telefone.strip(),
+                senha=senha_criptografada
+            )
+
+            return render(request, "cadastro.html", {
+                "sucesso": "Cliente cadastrado com sucesso! Faça login para continuar."
+            })
+            
+        except Exception as e:
+            return render(request, "cadastro.html", {
+                "erros": ["Erro interno. Tente novamente."]
+            })
