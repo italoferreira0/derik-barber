@@ -27,7 +27,16 @@
 
             <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto align-items-center">
-
+                <li class="nav-item">
+                <a class="nav-link" href="{% url 'index_funcionario' %}">
+                    Início
+                </a>
+                </li>
+                <li class="nav-item">
+                <a class="nav-link" href="{% url 'gerenciar_horarios' %}">
+                    Horários
+                </a>
+                </li>
                 <li class="nav-item">
                 <a class="nav-link" href="{% url 'admin:index' %}">Admin</a>
                 </li>

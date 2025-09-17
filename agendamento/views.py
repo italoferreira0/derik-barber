@@ -8,8 +8,9 @@ from django.utils.decorators import method_decorator
 from servicos.models import Servico
 from clientes.models import Cliente
 from agendamento.models import Agendamento
+from funcionarios.models import HorarioFuncionamento
 from django.contrib import messages
-from datetime import datetime, date
+from datetime import datetime, date, time
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 
@@ -74,9 +75,34 @@ class AgendaView(SessionLoginRequiredMixin, TemplateView):
                 messages.error(request, 'Serviço não encontrado.')
                 return render(request, self.template_name, self.get_context_data())
             
+            # Valida se a barbearia funciona no dia da semana
+            dia_semana = data_agendamento.weekday()
+            try:
+                horario_funcionamento = HorarioFuncionamento.objects.get(
+                    dia_semana=dia_semana, 
+                    ativo=True
+                )
+            except HorarioFuncionamento.DoesNotExist:
+                messages.error(request, 'A barbearia não funciona neste dia da semana.')
+                return render(request, self.template_name, self.get_context_data())
+            
+            # Valida se o horário está dentro do funcionamento
+            if hora_agendamento < horario_funcionamento.hora_inicio:
+                messages.error(request, 
+                    f'A barbearia abre às {horario_funcionamento.hora_inicio.strftime("%H:%M")}. '
+                    f'Escolha um horário a partir desta hora.')
+                return render(request, self.template_name, self.get_context_data())
+            
             # Calcula o horário de fim do serviço
             hora_inicio = datetime.combine(data_agendamento, hora_agendamento)
             hora_fim = hora_inicio + servico.duracao
+            
+            # Valida se o serviço termina antes do fechamento
+            if hora_fim.time() > horario_funcionamento.hora_fim:
+                messages.error(request, 
+                    f'A barbearia fecha às {horario_funcionamento.hora_fim.strftime("%H:%M")}. '
+                    f'Escolha um horário que permita terminar o serviço antes do fechamento.')
+                return render(request, self.template_name, self.get_context_data())
             
             # Valida se não há conflito de horário considerando a duração
             # Pega todos os agendamentos do dia
@@ -130,6 +156,19 @@ def horarios_disponiveis(request):
         try:
             data_agendamento = datetime.strptime(data_str, '%Y-%m-%d').date()
             servico = Servico.objects.get(id=servico_id)
+            dia_semana = data_agendamento.weekday()
+            
+            # Verifica se a barbearia funciona neste dia
+            try:
+                horario_funcionamento = HorarioFuncionamento.objects.get(
+                    dia_semana=dia_semana, 
+                    ativo=True
+                )
+            except HorarioFuncionamento.DoesNotExist:
+                return JsonResponse({
+                    'error': 'A barbearia não funciona neste dia da semana.',
+                    'horarios_disponiveis': []
+                })
             
             # Horários ocupados no dia
             agendamentos_dia = Agendamento.objects.filter(data=data_agendamento).select_related('servico')
@@ -146,9 +185,46 @@ def horarios_disponiveis(request):
                     'servico': agendamento.servico.nome
                 })
             
+            # Gera horários disponíveis dentro do funcionamento
+            horarios_disponiveis = []
+            inicio = horario_funcionamento.hora_inicio
+            fim = horario_funcionamento.hora_fim
+            
+            # Converte para minutos para facilitar cálculos
+            inicio_minutos = inicio.hour * 60 + inicio.minute
+            fim_minutos = fim.hour * 60 + fim.minute
+            duracao_minutos = int(servico.duracao.total_seconds() / 60)
+            
+            # Gera horários de 30 em 30 minutos
+            for minutos in range(inicio_minutos, fim_minutos, 30):
+                # Verifica se o serviço cabe no horário
+                if minutos + duracao_minutos <= fim_minutos:
+                    # Verifica se não conflita com agendamentos existentes
+                    conflito = False
+                    for agendamento in agendamentos_dia:
+                        agendamento_inicio = agendamento.hora.hour * 60 + agendamento.hora.minute
+                        agendamento_fim = agendamento_inicio + int(agendamento.servico.duracao.total_seconds() / 60)
+                        
+                        # Verifica sobreposição
+                        if minutos < agendamento_fim and minutos + duracao_minutos > agendamento_inicio:
+                            conflito = True
+                            break
+                    
+                    if not conflito:
+                        hora = time(minutos // 60, minutos % 60)
+                        horarios_disponiveis.append({
+                            'hora': hora.strftime('%H:%M'),
+                            'display': hora.strftime('%H:%M')
+                        })
+            
             return JsonResponse({
                 'horarios_ocupados': horarios_ocupados,
-                'duracao_servico': str(servico.duracao)
+                'horarios_disponiveis': horarios_disponiveis,
+                'duracao_servico': str(servico.duracao),
+                'horario_funcionamento': {
+                    'inicio': horario_funcionamento.hora_inicio.strftime('%H:%M'),
+                    'fim': horario_funcionamento.hora_fim.strftime('%H:%M')
+                }
             })
             
         except (ValueError, Servico.DoesNotExist) as e:

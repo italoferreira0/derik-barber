@@ -6,12 +6,14 @@ from django.contrib.auth.hashers import make_password, check_password
 from django.views.decorators.csrf import csrf_protect
 from django.utils.decorators import method_decorator
 
-from funcionarios.models import Funcionario
+from funcionarios.models import Funcionario, HorarioFuncionamento
 from servicos.models import Planos, Servico
 from agendamento.models import Agendamento
 from clientes.models import Cliente
 from django.db.models import Count, Sum
-from datetime import date, datetime
+from datetime import date, datetime, time
+from django.contrib import messages
+from django.http import JsonResponse
 
 # Mixin customizado para autenticação baseada em sessão
 class SessionLoginRequiredMixin:
@@ -172,3 +174,121 @@ class CadastroFuncionarioView(View):
             return render(request, "cadastro_funcionario.html", {
                 "erros": ["Erro interno. Tente novamente."]
             })
+
+class GerenciarHorariosView(SessionLoginRequiredMixin, TemplateView):
+    template_name = 'gerenciar_horarios.html'
+    
+    def get(self, request, *args, **kwargs):
+        horarios = HorarioFuncionamento.objects.all().order_by('dia_semana')
+        
+        # Cria uma lista de dicionários com os dados formatados para o template
+        dias_com_horarios = []
+        for dia, nome_dia in HorarioFuncionamento.DIAS_SEMANA:
+            horario_existente = None
+            for horario in horarios:
+                if horario.dia_semana == dia:
+                    horario_existente = horario
+                    break
+            
+            dias_com_horarios.append({
+                'dia': dia,
+                'nome_dia': nome_dia,
+                'horario': horario_existente,
+                'ativo': horario_existente.ativo if horario_existente else False,
+                'hora_inicio': horario_existente.hora_inicio.strftime('%H:%M') if horario_existente else '08:00',
+                'hora_fim': horario_existente.hora_fim.strftime('%H:%M') if horario_existente else '18:00',
+            })
+        
+        context = {
+            'dias_com_horarios': dias_com_horarios,
+            'dias_semana': HorarioFuncionamento.DIAS_SEMANA,
+        }
+        return render(request, self.template_name, context)
+    
+    def post(self, request, *args, **kwargs):
+        try:
+            # Processa cada dia da semana
+            for dia, nome_dia in HorarioFuncionamento.DIAS_SEMANA:
+                ativo = request.POST.get(f'dia_{dia}_ativo') == 'on'
+                hora_inicio = request.POST.get(f'dia_{dia}_inicio')
+                hora_fim = request.POST.get(f'dia_{dia}_fim')
+                
+                if ativo and hora_inicio and hora_fim:
+                    # Cria ou atualiza o horário
+                    horario, created = HorarioFuncionamento.objects.get_or_create(
+                        dia_semana=dia,
+                        defaults={
+                            'hora_inicio': hora_inicio,
+                            'hora_fim': hora_fim,
+                            'ativo': True
+                        }
+                    )
+                    
+                    if not created:
+                        horario.hora_inicio = hora_inicio
+                        horario.hora_fim = hora_fim
+                        horario.ativo = True
+                        horario.save()
+                else:
+                    # Desativa o horário se não estiver marcado
+                    try:
+                        horario = HorarioFuncionamento.objects.get(dia_semana=dia)
+                        horario.ativo = False
+                        horario.save()
+                    except HorarioFuncionamento.DoesNotExist:
+                        pass
+            
+            messages.success(request, 'Horários de funcionamento atualizados com sucesso!')
+            return redirect('gerenciar_horarios')
+            
+        except Exception as e:
+            messages.error(request, f'Erro ao salvar horários: {str(e)}')
+            return redirect('gerenciar_horarios')
+
+def get_horarios_disponiveis(request):
+    """API para retornar horários disponíveis em JSON"""
+    data_agendamento = request.GET.get('data')
+    if not data_agendamento:
+        return JsonResponse({'error': 'Data não fornecida'}, status=400)
+    
+    try:
+        data_obj = datetime.strptime(data_agendamento, '%Y-%m-%d').date()
+        dia_semana = data_obj.weekday()
+        
+        # Busca horário de funcionamento para o dia
+        try:
+            horario_funcionamento = HorarioFuncionamento.objects.get(
+                dia_semana=dia_semana, 
+                ativo=True
+            )
+        except HorarioFuncionamento.DoesNotExist:
+            return JsonResponse({'horarios': []})
+        
+        # Busca agendamentos existentes para o dia
+        agendamentos = Agendamento.objects.filter(data=data_obj).values_list('hora', flat=True)
+        horarios_ocupados = [ag.hour * 60 + ag.minute for ag in agendamentos]
+        
+        # Gera horários disponíveis
+        horarios_disponiveis = []
+        inicio = horario_funcionamento.hora_inicio
+        fim = horario_funcionamento.hora_fim
+        
+        # Converte para minutos para facilitar cálculos
+        inicio_minutos = inicio.hour * 60 + inicio.minute
+        fim_minutos = fim.hour * 60 + fim.minute
+        
+        # Gera horários de 30 em 30 minutos
+        for minutos in range(inicio_minutos, fim_minutos, 30):
+            if minutos not in horarios_ocupados:
+                hora = time(minutos // 60, minutos % 60)
+                horarios_disponiveis.append({
+                    'hora': hora.strftime('%H:%M'),
+                    'display': hora.strftime('%H:%M')
+                })
+        
+        return JsonResponse({'horarios': horarios_disponiveis})
+        
+    except ValueError:
+        return JsonResponse({'error': 'Formato de data inválido'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
