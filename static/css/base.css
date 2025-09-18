@@ -21,18 +21,39 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Evitar scroll horizontal em qualquer página */
+html,
+body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
 section {
   background-color: "#a0a0a0";
 }
 
 .titulos {
   font-family: 'Times New Roman', Times, serif;
+  color: antiquewhite;
 
+}
+
+.card {
+  border-radius: 30px;
+  background: linear-gradient(90deg, #212529, #495057);
+  color: antiquewhite;
+  /* box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.8); */
 }
 
 .style-card {
   /* background-color: #717171; */
   /* box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.8); */
+
+}
+
+.background-degrade {
+  background: linear-gradient(90deg, #212529, #495057);
+  color: antiquewhite;
 
 }
 
@@ -51,4 +72,12 @@ section {
   font-style: normal;
   font-family: 'Courier New', Courier, monospace;
   font-weight: bold;
+}
+
+.green-to-white-hover {
+  color: rgb(68, 212, 68); /* Initial text color */
+}
+
+.green-to-white-hover:hover {
+  color: white; /* Text color on hover */
 }

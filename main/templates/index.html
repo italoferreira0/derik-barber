@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<section style="background-color: #a0a0a0;">
+<section>
   <div class="container">
     <div class="d-flex justify-content-center">
       
@@ -28,19 +28,19 @@
 
       <div class="col-lg-6 text-center">
         <!-- Ajuste o src para sua imagem estática -->
-       <img src="{% static 'img/Deryk.png' %}" class="img-fluid w-80">
+       <img src="{% static 'img/deryk-babeiro.png' %}" class="img-fluid w-80">
       </div>
     </div>
     </div>
   </div>
 </section>
    
-<section style="background-color: #a0a0a0;">
+<section>
     <div class="container">
       <h2 class="text-center mb-4 display-5 fw-bold titulos" id="planos">Nossos Planos</h2>
       <div class="row justify-content-center g-4">
         {% for plano in planos %}
-        <div class="col-md-6 col-lg-4 mb-5 style-card" >
+        <div class="col-md-6 col-lg-4 mb-5 " >
           <div class="card h-100 shadow-sm">
             {% if plano.imagem %}
             <img src="{{ plano.imagem.url }}" class="card-img-top" alt="{{ plano.nome }}" style="height: 250px; object-fit: cover; border-radius: 20px;">

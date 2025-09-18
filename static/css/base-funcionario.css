@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Major+Mono+Display&display=swap');
+
+.navbar-brand {
+  font-family: 'Times New Roman', Times, serif;
+  color: rgb(159, 159, 159);
+  font-size: 25px;
+  margin: 0px;
+}
+
+.nav-link {
+  /* font-family:'Times New Roman', Times, serif; */
+  color: grey;
+  font-size: 14px;
+  margin: 0px;
+  font-family: "Major Mono Display", monospace;
+  font-weight: 600;
+  font-style: normal;
+}
+
+.titulos {
+  font-family: 'Times New Roman', Times, serif;
+
+}

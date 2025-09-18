@@ -29,41 +29,25 @@
 
             <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto align-items-center">
-                
-                <li class="nav-item">
-                <a class="nav-link" href="{% url 'servicos' %}">Serviços</a>
-                </li>
-                <li class="nav-item">
-                <a class="nav-link" href="{% url 'agenda' %}">Agendamento</a>
-                </li>
-                <li class="nav-item">
-                <li class="nav-item">
-                <a class="nav-link" href="{% url 'my-agendamento' %}">My Agendamentos</a>
-                </li>
-                {% comment %} <a class="nav-link" href="{% url 'contato' %}">Contato</a> {% endcomment %}
-                </li>
-                </li>
-                
-                <a class="nav-link" href="{% url 'index_funcionario' %}">CEO</a>
-                </li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'servicos' %}">Serviços</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'agenda' %}">Agendamento</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'my-agendamento' %}">My Agendamentos</a></li>
+                {% comment %} <li class="nav-item"><a class="nav-link" href="{% url 'contato' %}">Contato</a></li> {% endcomment %}
+                <li class="nav-item"><a class="nav-link" href="{% url 'index_funcionario' %}">CEO</a></li>
 
                 {% if request.session.cliente_nome %}
                 <!-- Dropdown do usuário -->
                 <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                    {{ request.session.cliente_nome }}
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                    <li><a class="dropdown-item" href="{% url 'logout' %}">Sair</a></li>
-                </ul>
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                        {{ request.session.cliente_nome }}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end bg-dark" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item bg-dark" style="color:white;" href="{% url 'logout' %}">Sair</a></li>
+                    </ul>
                 </li>
                 {% else %}
-                <li class="nav-item">
-                <a class="nav-link " href="{% url 'login' %}">Entrar</a>
-                </li>
-                <li class="nav-item">
-                <a class="nav-link " href="{% url 'cadastro' %}">Cadastro</a>
-                </li>
+                <li class="nav-item"><a class="nav-link " href="{% url 'login' %}">Entrar</a></li>
+                <li class="nav-item"><a class="nav-link " href="{% url 'cadastro' %}">Cadastro</a></li>
                 {% endif %}
 
             </ul>
@@ -72,19 +56,46 @@
     </nav>
 
     <!-- Conteúdo dinâmico -->
-    <main style="background-color: #a0a0a0; padding-bottom: 30px;">
-        <div>
+    <main class="background-degrade flex-grow-1">
+        <div class="container">
             {% block content %}
             {% endblock %}
         </div>
     </main>
 
     <!-- Footer -->
-    <footer class="bg-dark text-light text-center py-5 mt-auto">
-        <div class="container">
-            <p class="mb-1">© 2025 - Todos os direitos reservados</p>
-        </div>
-    </footer>
+    <footer class="bg-dark text-white pt-4 pb-2 ">
+  <div class="container">
+    <div class="row">
+      
+      <!-- Localização -->
+      <div class="col-md-6 mb-3">
+        <h5>📍 Localização</h5>
+        <p>Rua guarabira 503, Malvinas<br>
+        Campina Grande - PB<br>
+        CEP: 58433-281</p>
+      </div>
+      
+      <!-- Contato -->
+      <div class="col-md-6 mb-3">
+        <h5>📞 Contato</h5>
+        <p>
+            <i class="fa-solid fa-envelope" ></i> Email: contato@barbearia.com<br>
+            <i class="fa-brands fa-whatsapp"></i> WhatsApp: (83) 98888-0000<br>
+            <i class="fa-brands fa-instagram"></i> Instagram: <a href="https://www.instagram.com/derykducorte/" style="text-decoration: none; color: white;">derykducorte</a>
+        </p>
+        
+      </div>
+      
+    </div>
+    <hr class="bg-light">
+    <div class="text-center">
+      <p class="mb-4">© 2025 Barbearia Exemplo - Todos os direitos reservados.</p>
+    </div>
+  </div>
+</footer>
+
+
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

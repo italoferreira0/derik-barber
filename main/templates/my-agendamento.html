@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="mt-5 mb-5">
     {% csrf_token %}
-    <h2 class="mb-4">Meus Agendamentos</h2>
+    <h2 class="mb-4 titulos">Meus Agendamentos</h2>
 
     {% if agendamentos %}
         <ul class="list-group">
             {% for ag in agendamentos %}
-                <li class="list-group-item d-flex justify-content-between align-items-start">
+                <li class="list-group-item d-flex justify-content-between align-items-start background-degrade">
                     <div>
                         <strong>Serviço:</strong> {{ ag.servico.nome }} <br>
                         <strong>Data:</strong> {{ ag.data|date:"d/m/Y" }} às {{ ag.hora|time:"H:i" }} <br>
@@ -16,8 +16,11 @@
                             <strong>Observações:</strong> {{ ag.observacoes }}
                         {% endif %}
                     </div>
-                    <div>
-                        <button class="btn btn-danger btn-sm deletar-agendamento" data-agendamento-id="{{ ag.id }}">
+                    <div class="d-flex">
+                        <button class="btn btn-green style-buttons green-to-white-hover" >
+                            <i class="fa-solid fa-dollar-sign"></i></i> Realizar Pagamentos
+                        </button>
+                       <button class="btn btn-sm deletar-agendamento style-buttons" data-agendamento-id="{{ ag.id }}">
                             <i class="fas fa-trash"></i> Deletar
                         </button>
                     </div>
@@ -40,6 +43,7 @@
             <div class="modal-body">
                 Tem certeza que deseja deletar este agendamento? Esta ação não pode ser desfeita.
             </div>
+            
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn btn-danger" id="confirmarDelecaoBtn">Deletar</button>
