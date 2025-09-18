@@ -17,8 +17,11 @@
                         {% endif %}
                     </div>
                     <div class="d-flex">
-                        <button class="btn btn-green style-buttons green-to-white-hover" >
-                            <i class="fa-solid fa-dollar-sign"></i></i> Realizar Pagamentos
+                        <button class="btn btn-sm me-2 pagar-agendamento style-buttons green-to-white-hover"
+                                data-agendamento-id="{{ ag.id }}" 
+                                data-servico-nome="{{ ag.servico.nome }}" 
+                                data-servico-preco="{{ ag.servico.preco }}">
+                            <i class="fa-solid fa-dollar-sign" ></i> Realizar Pagamento
                         </button>
                        <button class="btn btn-sm deletar-agendamento style-buttons" data-agendamento-id="{{ ag.id }}">
                             <i class="fas fa-trash"></i> Deletar
@@ -37,20 +40,92 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="confirmarDelecaoModalLabel">Confirmar Deleção</h5>
+                <h5 class="modal-title text-dark" id="confirmarDelecaoModalLabel">Confirmar Deleção</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body text-dark">
                 Tem certeza que deseja deletar este agendamento? Esta ação não pode ser desfeita.
             </div>
             
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger" id="confirmarDelecaoBtn">Deletar</button>
+                <button type="button" class="btn style-buttons btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn style-buttons btn-danger" id="confirmarDelecaoBtn">Deletar</button>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modal de Pagamento -->
+<div class="modal fade" id="modalPagamento" tabindex="-1" aria-labelledby="modalPagamentoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="modalPagamentoLabel">
+                    <i class="fas fa-credit-card me-2"></i>Realizar Pagamento
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-dark">
+                <div class="row">
+                    <div class="col-md-6 ">
+                        <h6 class="fw-bold mb-3 ">Detalhes do Serviço</h6>
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <p class="mb-2"><strong>Serviço:</strong> <span id="servico-nome"></span></p>
+                                <p class="mb-2"><strong>Data:</strong> <span id="agendamento-data"></span></p>
+                                <p class="mb-2"><strong>Horário:</strong> <span id="agendamento-hora"></span></p>
+                                <hr>
+                                <h5 class="text-success mb-0">Total: R$ <span id="servico-preco"></span></h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold mb-3">Pagamento via PIX</h6>
+                        <div class="pix-info">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <p class="mb-3"><strong>Chave PIX:</strong></p>
+                                    <div class="input-group mb-3">
+                                        <input type="text" class="form-control" id="pix-key" value="italofsilva583@gmail.com" readonly>
+                                        <button class="btn btn-outline-secondary" type="button" onclick="copiarPix()">
+                                            <i class="fas fa-copy"></i> Copiar
+                                        </button>
+                                    </div>
+                                    <p class="mb-3"><strong>Valor:</strong></p>
+                                    <div class="input-group mb-3">
+                                        <input type="text" class="form-control" id="pix-value" readonly>
+                                        <button class="btn btn-outline-secondary" type="button" onclick="copiarValor()">
+                                            <i class="fas fa-copy"></i> Copiar
+                                        </button>
+                                    </div>
+                                    <div class="alert alert-info mb-0">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        <strong>Instrução:</strong> Copie a chave PIX e o valor, depois faça o pagamento no seu app bancário.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Instruções:</strong> Após realizar o pagamento via PIX, envie o comprovante para o WhatsApp da barbearia para confirmar seu agendamento.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                <!-- <a href="https://wa.me/5583991875438?text=Ol%C3%A1%21%20Realizei%20o%20pagamento%20do%20agendamento%20e%20gostaria%20de%20confirmar." target="_blank" 
+                   class="btn btn-success">
+                    <i class="fab fa-whatsapp me-2"></i>Enviar Comprovante
+                </a> -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -63,30 +138,72 @@ document.addEventListener('DOMContentLoaded', function() {
             confirmarDelecao(agendamentoId);
         }
     });
+
+    // Event delegation para os botões de pagamento
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.pagar-agendamento')) {
+            e.preventDefault();
+            const button = e.target.closest('.pagar-agendamento');
+            const agendamentoId = button.getAttribute('data-agendamento-id');
+            const servicoNome = button.getAttribute('data-servico-nome');
+            const servicoPreco = button.getAttribute('data-servico-preco');
+            
+            // Encontrar o agendamento na lista para pegar data e hora
+            const agendamentoItem = button.closest('.list-group-item');
+            const agendamentoText = agendamentoItem.textContent;
+            
+            // Extrair data e hora usando regex
+            const dataMatch = agendamentoText.match(/Data:\s*([^\s]+)/);
+            const horaMatch = agendamentoText.match(/às\s*([^\s]+)/);
+            
+            const dataText = dataMatch ? dataMatch[1] : 'N/A';
+            const horaText = horaMatch ? horaMatch[1] : 'N/A';
+            
+            abrirModalPagamento(agendamentoId, servicoNome, servicoPreco, dataText, horaText);
+        }
+    });
     
     // Event listener para o botão de confirmação do modal
     document.getElementById('confirmarDelecaoBtn').addEventListener('click', function() {
         const agendamentoId = this.getAttribute('data-agendamento-id');
         
+        // Obter CSRF token
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+        if (!csrfToken) {
+            console.error('CSRF token não encontrado');
+            alert('Erro de segurança. Recarregue a página e tente novamente.');
+            return;
+        }
+        
+        console.log('Deletando agendamento ID:', agendamentoId);
+        
         // Fazer requisição para deletar o agendamento
         fetch(`/deletar-agendamento/${agendamentoId}/`, {
             method: 'POST',
             headers: {
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'X-CSRFToken': csrfToken.value,
                 'Content-Type': 'application/json',
             },
         })
         .then(response => {
+            console.log('Resposta da requisição:', response.status, response.statusText);
+            
             if (response.ok) {
-                // Recarregar a página para mostrar a atualização
-                window.location.reload();
+                return response.json();
             } else {
-                alert('Erro ao deletar agendamento. Tente novamente.');
+                return response.json().then(data => {
+                    throw new Error(data.error || `Erro ${response.status}: ${response.statusText}`);
+                });
             }
         })
+        .then(data => {
+            console.log('Sucesso:', data);
+            // Recarregar a página para mostrar a atualização
+            window.location.reload();
+        })
         .catch(error => {
-            console.error('Erro:', error);
-            alert('Erro ao deletar agendamento. Tente novamente.');
+            console.error('Erro na requisição:', error);
+            alert(`Erro na requisição: ${error.message || 'Ops, tivemos um problema. Tente novamente.'}`);
         });
         
         // Fechar o modal
@@ -103,6 +220,72 @@ function confirmarDelecao(agendamentoId) {
     confirmarBtn.setAttribute('data-agendamento-id', agendamentoId);
     
     modal.show();
+}
+
+function abrirModalPagamento(agendamentoId, servicoNome, servicoPreco, dataText, horaText) {
+    // Preencher os dados no modal
+    document.getElementById('servico-nome').textContent = servicoNome;
+    document.getElementById('servico-preco').textContent = servicoPreco;
+    document.getElementById('agendamento-data').textContent = dataText || 'N/A';
+    document.getElementById('agendamento-hora').textContent = horaText || 'N/A';
+    document.getElementById('pix-value').value = `R$ ${servicoPreco}`;
+    
+    // Abrir o modal
+    const modal = new bootstrap.Modal(document.getElementById('modalPagamento'));
+    modal.show();
+}
+
+
+function copiarPix() {
+    const pixKey = document.getElementById('pix-key');
+    const texto = pixKey.value;
+    
+    // Usar API moderna de clipboard se disponível
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(texto).then(() => {
+            mostrarFeedback(event.target.closest('button'), 'Chave PIX copiada!');
+        }).catch(() => {
+            copiarFallback(pixKey);
+        });
+    } else {
+        copiarFallback(pixKey);
+    }
+}
+
+function copiarValor() {
+    const pixValue = document.getElementById('pix-value');
+    const texto = pixValue.value;
+    
+    // Usar API moderna de clipboard se disponível
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(texto).then(() => {
+            mostrarFeedback(event.target.closest('button'), 'Valor copiado!');
+        }).catch(() => {
+            copiarFallback(pixValue);
+        });
+    } else {
+        copiarFallback(pixValue);
+    }
+}
+
+function copiarFallback(elemento) {
+    elemento.select();
+    elemento.setSelectionRange(0, 99999); // Para dispositivos móveis
+    document.execCommand('copy');
+    mostrarFeedback(event.target.closest('button'), 'Copiado!');
+}
+
+function mostrarFeedback(button, mensagem) {
+    const originalContent = button.innerHTML;
+    button.innerHTML = `<i class="fas fa-check text-success"></i> ${mensagem}`;
+    button.classList.add('btn-success');
+    button.classList.remove('btn-outline-secondary');
+    
+    setTimeout(() => {
+        button.innerHTML = originalContent;
+        button.classList.remove('btn-success');
+        button.classList.add('btn-outline-secondary');
+    }, 2000);
 }
 </script>
 {% endblock %}

@@ -35,3 +35,7 @@ media/
 # Arquivos de migração não usados (opcional)
 */migrations/__pycache__/
 */migrations/*.pyc
+
+# Imagens
+planos
+servicos

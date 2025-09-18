@@ -21,8 +21,8 @@
         </ul>
 
         <div class="mt-3">
-          <a href="{% url 'agenda' %}" class="btn btn-dark btn-lg me-2 style-buttons" >Agendar Agora</a>
-          <a href="#planos" class="btn btn-outline-secondary btn-lg style-buttons" >Ver Planos</a>
+          <a href="{% url 'agenda' %}" class="btn btn-dark btn-lg me-2 style-buttons m-1" >Agendar Agora</a>
+          <a href="#planos" class="btn btn-outline-secondary btn-lg style-buttons m-1" >Ver Planos</a>
         </div>
       </div>
 
@@ -43,9 +43,9 @@
         <div class="col-md-6 col-lg-4 mb-5 " >
           <div class="card h-100 shadow-sm">
             {% if plano.imagem %}
-            <img src="{{ plano.imagem.url }}" class="card-img-top" alt="{{ plano.nome }}" style="height: 250px; object-fit: cover; border-radius: 20px;">
+            <img src="{{ plano.imagem.url }}" class="card-img-top" alt="{{ plano.nome }}" style="height: 300px; object-fit: cover; border-radius: 20px;">
             {% endif %}
-            <div class="card-body d-flex flex-column " style="font-family:Arial, Helvetica, sans-serif">
+            <div class="card-body d-flex flex-column ">
               <h5 class="card-title ">{{ plano.nome }}</h5>
               <p class="card-text flex-grow-1 ">{{ plano.descricao|truncatewords:20 }}</p>
               <p class="fw-bold mt-3 ">R$ {{ plano.preco }}</p>

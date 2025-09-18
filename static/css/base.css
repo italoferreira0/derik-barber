@@ -39,7 +39,7 @@ section {
 }
 
 .card {
-  border-radius: 30px;
+  border-radius: 20px;
   background: linear-gradient(90deg, #212529, #495057);
   color: antiquewhite;
   /* box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.8); */
@@ -75,9 +75,20 @@ section {
 }
 
 .green-to-white-hover {
-  color: rgb(68, 212, 68); /* Initial text color */
+  color: rgb(68, 212, 68);
+  /* Initial text color */
 }
 
 .green-to-white-hover:hover {
-  color: white; /* Text color on hover */
+  color: white;
+  /* Text color on hover */
+}
+
+footer h1 {
+  color:antiquewhite
+}
+
+footer p{
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 20px;
 }
