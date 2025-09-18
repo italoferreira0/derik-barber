@@ -1,24 +1,64 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
-    <h1>Bem-vindo à Barbearia</h1>
-    <p>Nossos Planos</p>
-    <div class="row g-4">
-      {% for plano in planos %}
-      <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-          {% if plano.imagem %}
-          <img src="{{ plano.imagem.url }}" class="card-img-top" alt="{{ plano.nome }}" style="height: 200px; object-fit: cover;">
-          {% endif %}
-          <div class="card-body d-flex flex-column">
-            <h5 class="card-title">{{ plano.nome }}</h5>
-            <p class="card-text flex-grow-1">{{ plano.descricao|truncatewords:20 }}</p>
-            <p class="fw-bold mt-3">R$ {{ plano.preco }}</p>
-            <a class="btn btn-dark mt-auto">Comprar</a>
-          </div>
+<section style="background-color: #a0a0a0;">
+  <div class="container">
+    <div class="d-flex justify-content-center">
+      
+      <div class="row align-items-center g-4">
+      <div class="col-lg-6">
+        <h1 class="display-5 fw-bold titulos">Bem-vindo à Barbearia <span class="text-dark"></span></h1>
+        <p class="lead mb-4" style="font-size: 22px;">
+          Mais que um corte: uma experiência de cuidado, estilo e confiança.
+          Profissionais qualificados, ambiente acolhedor e serviços pensados para você sair sempre no seu melhor.
+        </p>
+
+        <ul class="list-unstyled mb-4" style="font-style: normal;font-family: 'Courier New', Courier, monospace; font-weight: bold;">
+          <li class="mb-2"><i class="fa-solid fa-scissors"></i> Cortes modernos e clássicos</li>
+          <li class="mb-2"><i class="fa-solid fa-scissors"></i> Barba desenhada e tratamentos</li>
+          <li class="mb-2"><i class="fa-solid fa-scissors"></i> </i>Pacotes mensais e planos especiais</li>
+          <li class="mb-2"><i class="fas fa-user-tie"></i> Atendimento personalizado</li>
+        </ul>
+
+        <div class="mt-3">
+          <a href="{% url 'agenda' %}" class="btn btn-dark btn-lg me-2 style-buttons" >Agendar Agora</a>
+          <a href="#planos" class="btn btn-outline-secondary btn-lg style-buttons" >Ver Planos</a>
         </div>
       </div>
-      {% empty %}
-      <p>Nenhum serviço cadastrado.</p>
-      {% endfor %}
+
+      <div class="col-lg-6 text-center">
+        <!-- Ajuste o src para sua imagem estática -->
+       <img src="{% static 'img/Deryk.png' %}" class="img-fluid w-80">
+      </div>
     </div>
+    </div>
+  </div>
+</section>
+   
+<section style="background-color: #a0a0a0;">
+    <div class="container">
+      <h2 class="text-center mb-4 display-5 fw-bold titulos" id="planos">Nossos Planos</h2>
+      <div class="row justify-content-center g-4">
+        {% for plano in planos %}
+        <div class="col-md-6 col-lg-4 mb-5 style-card" >
+          <div class="card h-100 shadow-sm">
+            {% if plano.imagem %}
+            <img src="{{ plano.imagem.url }}" class="card-img-top" alt="{{ plano.nome }}" style="height: 250px; object-fit: cover; border-radius: 20px;">
+            {% endif %}
+            <div class="card-body d-flex flex-column " style="font-family:Arial, Helvetica, sans-serif">
+              <h5 class="card-title ">{{ plano.nome }}</h5>
+              <p class="card-text flex-grow-1 ">{{ plano.descricao|truncatewords:20 }}</p>
+              <p class="fw-bold mt-3 ">R$ {{ plano.preco }}</p>
+              <a class="btn btn-dark mt-auto style-buttons">Em Breve...</a>
+            </div>
+          </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+          <p class="text-center">Nenhum serviço cadastrado.</p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
 {% endblock %}

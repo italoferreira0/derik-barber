@@ -10,7 +10,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- CSS personalizado -->
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
     
 </head>
 <body class="d-flex flex-column min-vh-100">
@@ -18,7 +22,7 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{% url 'index' %}"><img src="{% static 'img/logo.png' %}" width="60px"> DERYK DU CORTE</a>
+            <a class="navbar-brand " href="{% url 'index' %}"><img src="{% static 'img/logo.png' %}" width="60px"> DERYK DU CORTE</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
             </button>
@@ -36,7 +40,7 @@
                 <li class="nav-item">
                 <a class="nav-link" href="{% url 'my-agendamento' %}">My Agendamentos</a>
                 </li>
-                <a class="nav-link" href="{% url 'contato' %}">Contato</a>
+                {% comment %} <a class="nav-link" href="{% url 'contato' %}">Contato</a> {% endcomment %}
                 </li>
                 </li>
                 
@@ -68,15 +72,15 @@
     </nav>
 
     <!-- Conteúdo dinâmico -->
-    <main class="flex-fill">
-        <div class="container py-4">
+    <main style="background-color: #a0a0a0; padding-bottom: 30px;">
+        <div>
             {% block content %}
             {% endblock %}
         </div>
     </main>
 
     <!-- Footer -->
-    <footer class="bg-dark text-light text-center py-3 mt-auto">
+    <footer class="bg-dark text-light text-center py-5 mt-auto">
         <div class="container">
             <p class="mb-1">© 2025 - Todos os direitos reservados</p>
         </div>

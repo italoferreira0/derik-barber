@@ -1,0 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=Major+Mono+Display&display=swap');
+
+.navbar-brand {
+  font-family: 'Times New Roman', Times, serif;
+  color: grey;
+  font-size: 25px;
+  margin: 0px;
+}
+
+.nav-link {
+  /* font-family:'Times New Roman', Times, serif; */
+  color: grey;
+  font-size: 14px;
+  margin: 0px;
+  font-family: "Major Mono Display", monospace;
+  font-weight: 600;
+  font-style: normal;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+section {
+  background-color: "#a0a0a0";
+}
+
+.titulos {
+  font-family: 'Times New Roman', Times, serif;
+
+}
+
+.style-card {
+  /* background-color: #717171; */
+  /* box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.8); */
+
+}
+
+.style-card div {
+  border-radius: 20px;
+  background-color: #717171;
+
+}
+
+.style-card div div {
+  border-radius: 20px;
+
+}
+
+.style-buttons {
+  font-style: normal;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
+}
