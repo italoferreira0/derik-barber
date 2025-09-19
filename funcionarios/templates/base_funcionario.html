@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <!-- CSS personalizado -->
-    <link rel="stylesheet" href="{% static 'css/base-funcionario.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
 </head>
 <body class="d-flex flex-column min-vh-100">
 
@@ -64,18 +64,27 @@
     </nav>
 
     <!-- Conteúdo dinâmico -->
-    <main class="flex-fill">
-        <div class="container py-4">
+    <main class="flex-fill background-degrade " >
+        <div class="container mt-4">
             {% block content %}
             {% endblock %}
         </div>
     </main>
 
     <!-- Footer -->
-    <footer class="bg-dark text-light text-center py-3 mt-auto">
-        <div class="container">
-            <p class="mb-1">© 2025 - Todos os direitos reservados</p>
+    <footer class="bg-dark text-white pt-4 pb-2 ">
+      <div class="container">
+        <hr class="bg-light">
+        <div class="text-center">
+          <p class="mb-2">© 2025 <strong>Deryk Du Corte</strong> - Todos os direitos reservados.</p>
+            <p class="mb-0" style="font-size: 14px;">
+            Desenvolvido por <strong>Italo Ferreira</strong><br>
+            <span href="mailto:italofsilva583@gmail.com" class="text-decoration-none text-white">
+                E-mail: italofsilva583@gmail.com
+            </span>
+            </p>
         </div>
+      </div>
     </footer>
 
     <!-- Bootstrap JS -->

@@ -45,6 +45,35 @@ section {
   /* box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.8); */
 }
 
+.card-cabecalho{
+  padding: 10px;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+}
+
+.card_agendamento_hoje{
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  /* border: solid 2px wheat; border-top: none; */
+
+}
+
+.card_agendamento {
+  border-radius: 10px;
+  background: #495057;
+  transition: all 0.3s ease;
+  /* border: solid 2px wheat; */
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .card_agendamento {
+    margin-bottom: 40px;
+  }
+}
+
+
+
 .style-card {
   /* background-color: #717171; */
   /* box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.8); */
@@ -57,10 +86,23 @@ section {
 
 }
 
+.saudaçao-degrade {
+  background: linear-gradient(90deg, #00366c, #2867a7);
+  color: antiquewhite;
+
+}
+
 .style-card div {
   border-radius: 20px;
   background-color: #717171;
 
+}
+
+.cards-ceo{
+  background-color: rgb(64, 64, 64);
+  padding: 20px;
+  border-radius: 20px;
+  border: solid 2px wheat;
 }
 
 .style-card div div {

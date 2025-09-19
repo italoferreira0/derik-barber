@@ -204,7 +204,8 @@ document.addEventListener('DOMContentLoaded', function() {
     checkboxes.forEach(checkbox => {
         checkbox.addEventListener('change', function() {
             const dia = this.id.split('_')[1];
-            const inputs = document.querySelectorAll(`[name*="dia_${dia}"]`);
+            // Busca apenas os inputs de horário, não o próprio checkbox
+            const inputs = document.querySelectorAll(`[name="dia_${dia}_inicio"], [name="dia_${dia}_fim"]`);
             
             inputs.forEach(input => {
                 input.disabled = !this.checked;
