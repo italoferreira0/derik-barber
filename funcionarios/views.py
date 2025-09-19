@@ -1,10 +1,12 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView
 from django.views import View
 from django.urls import reverse_lazy
 from django.contrib.auth.hashers import make_password, check_password
 from django.views.decorators.csrf import csrf_protect
 from django.utils.decorators import method_decorator
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
 
 from funcionarios.models import Funcionario, HorarioFuncionamento
 from servicos.models import Planos, Servico
@@ -13,7 +15,6 @@ from clientes.models import Cliente
 from django.db.models import Count, Sum
 from datetime import date, datetime, time
 from django.contrib import messages
-from django.http import JsonResponse
 
 # Mixin customizado para autenticação baseada em sessão
 class SessionLoginRequiredMixin:
@@ -292,3 +293,26 @@ def get_horarios_disponiveis(request):
         return JsonResponse({'error': 'Formato de data inválido'}, status=400)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+class HistoricoAgendamentosView(SessionLoginRequiredMixin, TemplateView):
+    template_name = 'historico_agendamentos.html'
+    
+    def get(self, request, *args, **kwargs):
+        # Busca todos os agendamentos com informações do cliente e serviço
+        agendamentos = Agendamento.objects.select_related('cliente', 'servico').order_by('-data', '-hora')
+        
+        context = {
+            'agendamentos': agendamentos,
+        }
+        return render(request, self.template_name, context)
+
+
+@csrf_protect
+def get_servicos(request):
+    """API para retornar lista de serviços em JSON"""
+    # Verifica se o funcionário está logado
+    if not request.session.get('funcionario_id'):
+        return JsonResponse({'success': False, 'message': 'Acesso negado. Faça login primeiro.'}, status=401)
+    
+    servicos = Servico.objects.all().values('id', 'nome', 'preco')
+    return JsonResponse({'servicos': list(servicos)})

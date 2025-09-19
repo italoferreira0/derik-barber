@@ -7,5 +7,7 @@ urlpatterns = [
     path('cadastro/', CadastroFuncionarioView.as_view(), name='cadastro_funcionario'),
     path('logout/', LogoutView, name='logout_funcionario'),
     path('gerenciar-horarios/', GerenciarHorariosView.as_view(), name='gerenciar_horarios'),
+    path('historico/', HistoricoAgendamentosView.as_view(), name='historico_agendamentos'),
     path('api/horarios-disponiveis/', get_horarios_disponiveis, name='horarios_disponiveis'),
+    path('api/servicos/', get_servicos, name='get_servicos'),
 ]
